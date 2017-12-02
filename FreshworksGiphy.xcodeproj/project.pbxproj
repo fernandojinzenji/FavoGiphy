@@ -11,6 +11,7 @@
 		9C2FAC691FD2254C0072933F /* GiphyImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2FAC681FD2254C0072933F /* GiphyImage.swift */; };
 		9C65CC371FD26E720000D8DF /* TrendingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C65CC361FD26E720000D8DF /* TrendingViewModel.swift */; };
 		9C65CC391FD26E7D0000D8DF /* FavouritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C65CC381FD26E7D0000D8DF /* FavouritesViewModel.swift */; };
+		9C65CC401FD2943B0000D8DF /* GiphyImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C65CC3F1FD2943B0000D8DF /* GiphyImageManager.swift */; };
 		9CF39E7F1FD1183500ABDAC4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF39E7E1FD1183500ABDAC4 /* AppDelegate.swift */; };
 		9CF39E841FD1183500ABDAC4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9CF39E821FD1183500ABDAC4 /* Main.storyboard */; };
 		9CF39E861FD1183500ABDAC4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9CF39E851FD1183500ABDAC4 /* Assets.xcassets */; };
@@ -26,6 +27,7 @@
 		9C2FAC681FD2254C0072933F /* GiphyImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiphyImage.swift; sourceTree = "<group>"; };
 		9C65CC361FD26E720000D8DF /* TrendingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingViewModel.swift; sourceTree = "<group>"; };
 		9C65CC381FD26E7D0000D8DF /* FavouritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesViewModel.swift; sourceTree = "<group>"; };
+		9C65CC3F1FD2943B0000D8DF /* GiphyImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiphyImageManager.swift; sourceTree = "<group>"; };
 		9CF39E7B1FD1183500ABDAC4 /* FreshworksGiphy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FreshworksGiphy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CF39E7E1FD1183500ABDAC4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CF39E831FD1183500ABDAC4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				9CF39E961FD144C000ABDAC4 /* APIManager.swift */,
+				9C65CC3F1FD2943B0000D8DF /* GiphyImageManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -279,6 +282,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C65CC401FD2943B0000D8DF /* GiphyImageManager.swift in Sources */,
 				9C65CC391FD26E7D0000D8DF /* FavouritesViewModel.swift in Sources */,
 				9CF39E931FD1394F00ABDAC4 /* FavouritesViewController.swift in Sources */,
 				9CF39E971FD144C000ABDAC4 /* APIManager.swift in Sources */,

@@ -26,6 +26,7 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
     }()
     
     private let apiManager = APIManager()
+    private let giphyManager = GiphyImageManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,20 +57,8 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
                 let cell = tableView.cellForRow(at: indexPath) as! TrendingItemTabelViewCell
                 let giphy = giphyCollection[indexPath.row]
                 
-                let realm = try! Realm()
-                let favItem = GiphyImage()
-                favItem.id = giphy.id
-                
-                favItem.imageData0 = NSData(data: UIImageJPEGRepresentation((cell.giphyImageView.image?.images![0])!, 1)!)
-                favItem.imageData1 = NSData(data: UIImageJPEGRepresentation((cell.giphyImageView.image?.images![1])!, 1)!)
-                favItem.imageData2 = NSData(data: UIImageJPEGRepresentation((cell.giphyImageView.image?.images![2])!, 1)!)
-                favItem.imageData3 = NSData(data: UIImageJPEGRepresentation((cell.giphyImageView.image?.images![3])!, 1)!)
-                favItem.imageData4 = NSData(data: UIImageJPEGRepresentation((cell.giphyImageView.image?.images![4])!, 1)!)
-                favItem.imageData5 = NSData(data: UIImageJPEGRepresentation((cell.giphyImageView.image?.images![5])!, 1)!)
-                
-                try! realm.write {
-                    realm.add(favItem)
-                }
+                giphyManager.saveGiphy(id: giphy.id, image: cell.giphyImageView.image!)
+
             }
         }
         else {
@@ -80,15 +69,8 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
             
             if let indexPath = tableView.indexPathForRow(at: location) {
                 
-                let hiddenID = giphyCollection[indexPath.row].id
-                
-                let realm = try! Realm()
-                let predicate = NSPredicate(format: "id = %@", hiddenID)
-                let favItem = realm.objects(GiphyImage.self).filter(predicate)
-                
-                try! realm.write {
-                    realm.delete(favItem)
-                }
+                let hiddenID = giphyCollection[indexPath.row].id                
+                giphyManager.deleteGiphy(id: hiddenID)
             }
         }
         

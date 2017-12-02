@@ -20,3 +20,4 @@ class GiphyImage: Object {
     @objc dynamic var imageData4: NSData!
     @objc dynamic var imageData5: NSData!
 }
+

@@ -199,7 +199,7 @@
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="giphy.gif" translatesAutoresizingMaskIntoConstraints="NO" id="vfG-bC-PyL">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="vfG-bC-PyL">
                                                     <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
                                                 </imageView>
                                                 <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="iuJ-Zi-LD4">
@@ -290,7 +290,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="giphy.gif" width="200" height="113"/>
         <image name="heart_active" width="30" height="30"/>
         <image name="heart_broke" width="28" height="30"/>
         <image name="tab_fav" width="30" height="30"/>
