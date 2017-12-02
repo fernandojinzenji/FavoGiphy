@@ -18,6 +18,5 @@ class GiphyImage: Object {
     @objc dynamic var imageData2: NSData!
     @objc dynamic var imageData3: NSData!
     @objc dynamic var imageData4: NSData!
-    @objc dynamic var imageData5: NSData!    
-    
+    @objc dynamic var imageData5: NSData!
 }

@@ -21,6 +21,12 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
     private var currentPage = 1
     private var itensPerPage = 10
     
+    lazy private var maxItens: Int = {
+        return currentPage * itensPerPage
+    }()
+    
+    private let apiManager = APIManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -90,29 +96,30 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
     
     @IBAction func searchButtonPressed(_ sender: UIButton) {
         
-        if let keyword = searchTextField.text, keyword.count >= 3, let encodedKeyword = keyword.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed) {
+        if let keyword = searchTextField.text, keyword.count >= 3 {
         
             activityIndicator.startAnimating()
             tableView.alpha = 0.6
             
-            let url = URL(string: "https://api.giphy.com/v1/gifs/search?api_key=0CI8BendPTey00Tm990J6ft8B79SbUXi&q=\(encodedKeyword)&limit=\(currentPage * itensPerPage)&offset=0&rating=G&lang=en")
-            let request = URLRequest(url: url!)
-            
-            URLSession.shared.dataTask(with: request) { (data, response, error) in
+            apiManager.searchGiphyBy(keyword: keyword, limit: maxItens, completionHandler: { (giphyData, error) in
                 
-                let jsonData = try? JSONDecoder().decode(GiphyData.self, from: data!)
+                if let error = error {
+                    print("\(error.localizedDescription)")
+                    return
+                }
                 
-                guard let giphyData = jsonData else { return }
-                
-                DispatchQueue.main.async {
+                if let giphyData = giphyData {
                     
-                    self.activityIndicator.stopAnimating()
-                    self.tableView.alpha = 1
-                    self.giphyCollection = giphyData.data
-                    self.tableView.reloadData()
+                    DispatchQueue.main.async {
+                        
+                        self.activityIndicator.stopAnimating()
+                        self.tableView.alpha = 1
+                        self.giphyCollection = giphyData.data
+                        self.tableView.reloadData()
+                    }
                     
                 }
-                }.resume()
+            })
         }
         else if searchTextField.text == "" {
             
@@ -140,25 +147,26 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
         activityIndicator.startAnimating()
         tableView.alpha = 0.6
         
-        let url = URL(string: "https://api.giphy.com/v1/gifs/trending?api_key=0CI8BendPTey00Tm990J6ft8B79SbUXi&limit=\(currentPage * itensPerPage)&rating=G")
-        let request = URLRequest(url: url!)
-        
-        URLSession.shared.dataTask(with: request) { (data, response, error) in
+        apiManager.selectTrendingGiphy(limit: maxItens) { (giphyData, error) in
             
-            let jsonData = try? JSONDecoder().decode(GiphyData.self, from: data!)
-            
-            guard let giphyData = jsonData else { return }
-            
-            DispatchQueue.main.async {
-                
-                self.activityIndicator.stopAnimating()
-                self.tableView.alpha = 1
-                self.giphyCollection = giphyData.data
-                self.tableView.reloadData()
+            if let error = error {
+                print("\(error.localizedDescription)")
+                return
             }
             
+            if let giphyData = giphyData {
+                
+                DispatchQueue.main.async {
+                    
+                    self.activityIndicator.stopAnimating()
+                    self.tableView.alpha = 1
+                    self.giphyCollection = giphyData.data
+                    self.tableView.reloadData()
+                }
+                
+            }
             
-            }.resume()
+        }
     }
     
     // MARK: UITableViewDelegate, UITableViewDataSource
