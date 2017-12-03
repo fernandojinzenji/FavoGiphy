@@ -98,7 +98,7 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! TrendingItemTabelViewCell
         
-        let cellVM = viewModel.getCellViewModel(at: indexPath)
+        let cellVM = viewModel.getCellViewModel(indexPath: indexPath)
         
         cell.titleLabel.text = cellVM.title
         cell.favouriteButton.setImage((cellVM.isFavorite) ? #imageLiteral(resourceName: "heart_active") : #imageLiteral(resourceName: "tab_fav"), for: .normal)
@@ -119,10 +119,7 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-//        if indexPath.row == (currentPage * itensPerPage) - 1 {
-//            currentPage = currentPage + 1
-//            loadTrendingGiphys()
-//        }
+        viewModel.loadMoreGiphys(indexPath: indexPath)
         
     }
     

@@ -15,10 +15,12 @@ class TrendingViewModel {
     private let giphyManager = GiphyImageManager()
     
     private var currentPage = 1
-    private var itensPerPage = 10
-    lazy private var maxItens: Int = {
+    private var itensPerPage = 25
+    private var keyword: String?
+    
+    private func maxItens() -> Int {
         return currentPage * itensPerPage
-    }()
+    }
     
     var cellViewModels: [TrendingCellViewModel] = [TrendingCellViewModel]() {
         didSet {
@@ -36,11 +38,12 @@ class TrendingViewModel {
     
     func fetchData(keyword: String?) {
         
+        self.keyword = keyword
         self.isLoading = true
         
         if let unwrappedKeyword = keyword, unwrappedKeyword.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
         
-            apiManager.searchGiphyBy(keyword: unwrappedKeyword, limit: maxItens, completionHandler: { (giphyData, error) in
+            apiManager.searchGiphyBy(keyword: unwrappedKeyword, limit: maxItens(), completionHandler: { (giphyData, error) in
         
                 self.isLoading = false
                 
@@ -55,10 +58,10 @@ class TrendingViewModel {
                     self.cellViewModels = vms
                     
                 }
-            })            
+            })
         }
         else {
-            apiManager.selectTrendingGiphy(limit: maxItens) { (giphyData, error) in
+            apiManager.selectTrendingGiphy(limit: maxItens()) { (giphyData, error) in
                 
                 self.isLoading = false
                 
@@ -100,8 +103,16 @@ class TrendingViewModel {
         
     }
     
-    func getCellViewModel( at indexPath: IndexPath ) -> TrendingCellViewModel {
+    func getCellViewModel(indexPath: IndexPath) -> TrendingCellViewModel {
         return cellViewModels[indexPath.row]
+    }
+    
+    func loadMoreGiphys(indexPath: IndexPath) {
+        
+        if indexPath.row == (maxItens()) - 1 {
+            currentPage = currentPage + 1
+            fetchData(keyword: keyword)
+        }
     }
     
     private func createCellViewModel(giphyInfo: GiphyInfo) -> TrendingCellViewModel {
