@@ -13,6 +13,13 @@ import RealmSwift
 
 class GiphyImageManager {
     
+    var savedGiphy: Results<GiphyImage>!
+    
+    init() {
+        let realm = try! Realm()
+        self.savedGiphy = realm.objects(GiphyImage.self)
+    }
+    
     func saveGiphy(id: String, image: UIImage) {
         
         let giphy = GiphyImage()
@@ -47,13 +54,23 @@ class GiphyImageManager {
     }
     
     func deleteGiphy(id: String) {
+
         let realm = try! Realm()
         let predicate = NSPredicate(format: "id = %@", id)
-        let giphy = realm.objects(GiphyImage.self).filter(predicate)
+        let giphyResults = realm.objects(GiphyImage.self).filter(predicate)
         
         try! realm.write {
-            realm.delete(giphy)
+            realm.delete(giphyResults)
         }
+    }
+    
+    func exists(id: String) -> Bool {
+        
+        let realm = try! Realm()
+        let predicate = NSPredicate(format: "id = %@", id)
+        let giphyResults = realm.objects(GiphyImage.self).filter(predicate)
+        
+        return (giphyResults.count > 0)
     }
     
     

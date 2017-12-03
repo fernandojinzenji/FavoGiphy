@@ -16,17 +16,11 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    private var giphyCollection = [GiphyInfo]()
-    private var giphyFavorites: Results<GiphyImage>!
-    private var currentPage = 1
-    private var itensPerPage = 10
-    
-    lazy private var maxItens: Int = {
-        return currentPage * itensPerPage
+    lazy var viewModel: TrendingViewModel = {
+        return TrendingViewModel()
     }()
-    
-    private let apiManager = APIManager()
-    private let giphyManager = GiphyImageManager()
+
+    // MARK: ViewController life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,87 +29,59 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        loadTrendingGiphys()
+        loadVM()
+    }
+    
+    // MARK: Private methods
+    
+    private func loadVM() {
         
-        // Do any additional setup after loading the view.
-        let realm = try! Realm()
-        giphyFavorites = realm.objects(GiphyImage.self)
+        viewModel.updateLoadingStatusClosure = { [weak self] () in
+            DispatchQueue.main.async {
+                let isLoading = self?.viewModel.isLoading ?? false
+                if isLoading {
+                    self?.activityIndicator.startAnimating()
+                    self?.tableView.alpha = 0.6
+                }
+                else {
+                    self?.activityIndicator.stopAnimating()
+                    self?.tableView.alpha = 1.0
+                }
+            }
+        }
+        
+        viewModel.reloadTableViewClosure = { [weak self] () in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
+        }
+        
+        viewModel.fetchData(keyword: searchTextField.text)
     }
     
     // MARK: Actions
     
     @IBAction func favouriteButtonPressed(_ sender: UIButton) {
         
-        if sender.tag == 1 {
-            sender.tag = 2
-            sender.setImage(#imageLiteral(resourceName: "heart_active"), for: .normal)
-            
-            let location = sender.convert(sender.bounds.origin, to: tableView)
-            
-            if let indexPath = tableView.indexPathForRow(at: location) {
-                
-                let cell = tableView.cellForRow(at: indexPath) as! TrendingItemTabelViewCell
-                let giphy = giphyCollection[indexPath.row]
-                
-                giphyManager.saveGiphy(id: giphy.id, image: cell.giphyImageView.image!)
-
-            }
-        }
-        else {
-            sender.tag = 1
-            sender.setImage(#imageLiteral(resourceName: "tab_fav"), for: .normal)
-            
-            let location = sender.convert(sender.bounds.origin, to: tableView)
-            
-            if let indexPath = tableView.indexPathForRow(at: location) {
-                
-                let hiddenID = giphyCollection[indexPath.row].id                
-                giphyManager.deleteGiphy(id: hiddenID)
-            }
-        }
+        let location = sender.convert(sender.bounds.origin, to: tableView)
         
+        if let indexPath = tableView.indexPathForRow(at: location) {
+         
+            let cell = tableView.cellForRow(at: indexPath) as! TrendingItemTabelViewCell
+            viewModel.favouriteButtonPressed(indexPath: indexPath, image: cell.giphyImageView.image!)            
+        }
     }
     
     @IBAction func searchButtonPressed(_ sender: UIButton) {
-        
-        if let keyword = searchTextField.text, keyword.count >= 3 {
-        
-            activityIndicator.startAnimating()
-            tableView.alpha = 0.6
-            
-            apiManager.searchGiphyBy(keyword: keyword, limit: maxItens, completionHandler: { (giphyData, error) in
-                
-                if let error = error {
-                    print("\(error.localizedDescription)")
-                    return
-                }
-                
-                if let giphyData = giphyData {
-                    
-                    DispatchQueue.main.async {
-                        
-                        self.activityIndicator.stopAnimating()
-                        self.tableView.alpha = 1
-                        self.giphyCollection = giphyData.data
-                        self.tableView.reloadData()
-                    }
-                    
-                }
-            })
-        }
-        else if searchTextField.text == "" {
-            
-            loadTrendingGiphys()
-            
-        }
-        
+
+        viewModel.fetchData(keyword: searchTextField.text)
         view.endEditing(true)
         
     }
     
     @IBAction func searchTextChanged(_ sender: UITextField) {
         if sender.text == "" {
-            loadTrendingGiphys()
+            viewModel.fetchData(keyword: searchTextField.text)
         }
     }
     
@@ -123,70 +89,25 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
         view.endEditing(true)
     }
     
-    // MARK: Private Methods
-    
-    func loadTrendingGiphys() {
-        activityIndicator.startAnimating()
-        tableView.alpha = 0.6
-        
-        apiManager.selectTrendingGiphy(limit: maxItens) { (giphyData, error) in
-            
-            if let error = error {
-                print("\(error.localizedDescription)")
-                return
-            }
-            
-            if let giphyData = giphyData {
-                
-                DispatchQueue.main.async {
-                    
-                    self.activityIndicator.stopAnimating()
-                    self.tableView.alpha = 1
-                    self.giphyCollection = giphyData.data
-                    self.tableView.reloadData()
-                }
-                
-            }
-            
-        }
-    }
-    
     // MARK: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return giphyCollection.count
+        return viewModel.cellViewModels.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! TrendingItemTabelViewCell
         
-        let giphy = giphyCollection[indexPath.row]
-        cell.titleLabel.text = giphy.title
+        let cellVM = viewModel.getCellViewModel(at: indexPath)
         
-        let predicate = NSPredicate(format: "id = %@", giphy.id)
-        if giphyFavorites.filter(predicate).count > 0 {
-            cell.favouriteButton.tag = 2
-            cell.favouriteButton.setImage(#imageLiteral(resourceName: "heart_active"), for: .normal)
-        }
-        else {
-            cell.favouriteButton.tag = 1
-            cell.favouriteButton.setImage(#imageLiteral(resourceName: "tab_fav"), for: .normal)
-        }
+        cell.titleLabel.text = cellVM.title
+        cell.favouriteButton.setImage((cellVM.isFavorite) ? #imageLiteral(resourceName: "heart_active") : #imageLiteral(resourceName: "tab_fav"), for: .normal)
+        cell.favouriteButton.isEnabled = false
         
-        let url = URL(string: giphy.images.fixed_height_downsampled.url)
-        
-        if let url = url {
-            
-            let request = URLRequest(url: url)
-            URLSession.shared.dataTask(with: request) { (data, response, error) in
-                
-                DispatchQueue.main.async {
-                    
-                    cell.giphyImageView.image = UIImage.gif(data: data!)
-                    
-                }
-                
-                }.resume()
+        // Download giphy
+        viewModel.downloadGiphy(url: cellVM.image) { (image) in
+            cell.giphyImageView.image = image
+            cell.favouriteButton.isEnabled = true
         }
         
         return cell
@@ -198,10 +119,10 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        if indexPath.row == (currentPage * itensPerPage) - 1 {
-            currentPage = currentPage + 1
-            loadTrendingGiphys()
-        }
+//        if indexPath.row == (currentPage * itensPerPage) - 1 {
+//            currentPage = currentPage + 1
+//            loadTrendingGiphys()
+//        }
         
     }
     

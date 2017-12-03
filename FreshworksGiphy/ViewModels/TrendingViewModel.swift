@@ -7,11 +7,115 @@
 //
 
 import Foundation
+import UIKit
 
 class TrendingViewModel {
     
+    private let apiManager = APIManager()
+    private let giphyManager = GiphyImageManager()
     
+    private var currentPage = 1
+    private var itensPerPage = 10
+    lazy private var maxItens: Int = {
+        return currentPage * itensPerPage
+    }()
     
+    var cellViewModels: [TrendingCellViewModel] = [TrendingCellViewModel]() {
+        didSet {
+            self.reloadTableViewClosure?()
+        }
+    }
+    var reloadTableViewClosure: (()->())?
     
+    var isLoading: Bool = false {
+        didSet {
+            self.updateLoadingStatusClosure?()
+        }
+    }
+    var updateLoadingStatusClosure: (()->())?
     
+    func fetchData(keyword: String?) {
+        
+        self.isLoading = true
+        
+        if let unwrappedKeyword = keyword, unwrappedKeyword.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
+        
+            apiManager.searchGiphyBy(keyword: unwrappedKeyword, limit: maxItens, completionHandler: { (giphyData, error) in
+        
+                self.isLoading = false
+                
+                if let error = error {
+                    print("\(error.localizedDescription)")
+                }
+                else {
+                    var vms = [TrendingCellViewModel]()
+                    for info in (giphyData?.data)! {
+                        vms.append(self.createCellViewModel(giphyInfo: info))
+                    }
+                    self.cellViewModels = vms
+                    
+                }
+            })            
+        }
+        else {
+            apiManager.selectTrendingGiphy(limit: maxItens) { (giphyData, error) in
+                
+                self.isLoading = false
+                
+                if let error = error {
+                    print("\(error.localizedDescription)")
+                }
+                else {
+                    var vms = [TrendingCellViewModel]()
+                    for info in (giphyData?.data)! {
+                        vms.append(self.createCellViewModel(giphyInfo: info))
+                    }
+                    self.cellViewModels = vms
+                    
+                }
+            }
+        }
+    }
+    
+    func favouriteButtonPressed(indexPath: IndexPath, image: UIImage) {
+        
+        if giphyManager.exists(id: cellViewModels[indexPath.row].id) {
+            giphyManager.deleteGiphy(id: cellViewModels[indexPath.row].id)
+            cellViewModels[indexPath.row].isFavorite = false
+        }
+        else {
+            giphyManager.saveGiphy(id: cellViewModels[indexPath.row].id, image: image)
+            cellViewModels[indexPath.row].isFavorite = true
+        }
+    }
+    
+    func downloadGiphy(url: String, completionHandler: @escaping((UIImage)->())) {
+        
+        apiManager.downloadGiphy(url: url) { (data, error) in
+            
+            if let unwrappedData = data, let image = UIImage.gif(data: unwrappedData) {
+                completionHandler(image)
+            }
+        }
+        
+    }
+    
+    func getCellViewModel( at indexPath: IndexPath ) -> TrendingCellViewModel {
+        return cellViewModels[indexPath.row]
+    }
+    
+    private func createCellViewModel(giphyInfo: GiphyInfo) -> TrendingCellViewModel {
+        
+       let isFavorite = giphyManager.exists(id: giphyInfo.id)
+        
+        return TrendingCellViewModel(id: giphyInfo.id, title: giphyInfo.title, image: giphyInfo.images.fixed_height_downsampled.url, isFavorite: isFavorite)
+        
+    }
+}
+
+struct TrendingCellViewModel {
+    var id: String
+    var title: String
+    var image: String
+    var isFavorite: Bool
 }

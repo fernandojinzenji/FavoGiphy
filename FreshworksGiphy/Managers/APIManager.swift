@@ -53,6 +53,30 @@ class APIManager {
         
     }
     
+    func downloadGiphy(url: String, completionHandler: @escaping (Data?, Error?)->()) {
+        
+        let url = URL(string: url)
+        
+        if let url = url {
+            
+            let request = URLRequest(url: url)
+            URLSession.shared.dataTask(with: request) { (data, response, error) in
+                
+                DispatchQueue.main.async {
+                    
+                    if let error = error {
+                        completionHandler(nil, error)
+                    }
+                    else if let data = data {
+                        completionHandler(data, nil)
+                    }
+                    
+                }
+                
+                }.resume()
+        }
+    }
+    
     private func getGiphyTrendingURL(limit: Int) -> URL {
         
         return URL(string: "https://api.giphy.com/v1/gifs/trending?api_key=\(apiKey)&limit=\(limit)&rating=G")!
