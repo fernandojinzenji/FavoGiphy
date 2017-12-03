@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import SwiftGifOrigin
-import RealmSwift
 
 class TrendingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -26,8 +24,8 @@ class TrendingViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
         loadVM()
     }

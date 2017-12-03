@@ -73,7 +73,31 @@ class GiphyImageManager {
         return (giphyResults.count > 0)
     }
     
-    
-    
+    func generateAnimatedGif(giphy: GiphyImage) -> UIImage {
+
+        var imageArray = [UIImage]()
+        
+        if let data0 = giphy.imageData0, let image0 = UIImage(data: data0 as Data) {
+            imageArray.append(image0)
+        }
+        if let data1 = giphy.imageData1, let image1 = UIImage(data: data1 as Data) {
+            imageArray.append(image1)
+        }
+        if let data2 = giphy.imageData2, let image2 = UIImage(data: data2 as Data) {
+            imageArray.append(image2)
+        }
+        if let data3 = giphy.imageData3, let image3 = UIImage(data: data3 as Data) {
+            imageArray.append(image3)
+        }
+        if let data4 = giphy.imageData4, let image4 = UIImage(data: data4 as Data) {
+            imageArray.append(image4)
+        }
+        if let data5 = giphy.imageData5, let image5 = UIImage(data: data5 as Data) {
+            imageArray.append(image5)
+        }
+        
+        return UIImage.animatedImage(with: imageArray, duration: 1)!
+        
+    }
     
 }
