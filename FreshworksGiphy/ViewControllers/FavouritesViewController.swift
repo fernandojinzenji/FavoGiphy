@@ -79,33 +79,26 @@ class FavouritesViewController: UIViewController, UICollectionViewDelegate, UICo
     
     @IBAction func removeGiphyButtonPressed(_ sender: UIButton) {
         
-//        let location = sender.convert(sender.bounds.origin, to: collectionView)
-//        let indexPath = collectionView.indexPathForItem(at: location)
-//        let cell = collectionView.cellForItem(at: indexPath!) as! FavoriteItemCollectionViewCell
-//        let hiddenID = cell.hiddenGiphyID.text
-//
-//        let realm = try! Realm()
-//        let predicate = NSPredicate(format: "id = %@", hiddenID!)
-//        let giphy = realm.objects(GiphyImage.self).filter(predicate)
-//        try! realm.write {
-//            realm.delete(giphy)
-//        }
-//
-//        collectionView.reloadData()
-//
-//        cell.giphyImageView.alpha = 1.0
-//        cell.stackView.isHidden = true
+        let location = sender.convert(sender.bounds.origin, to: collectionView)
+        let indexPath = collectionView.indexPathForItem(at: location)
+        let cell = collectionView.cellForItem(at: indexPath!) as! FavoriteItemCollectionViewCell
+        let hiddenID = cell.hiddenGiphyID.text
+
+        viewModel.removeFromFavorites(id: hiddenID!)        
+
+        cell.giphyImageView.alpha = 1.0
+        cell.stackView.isHidden = true
         
     }
     
     @IBAction func cancelButtonPressed(_ sender: UIButton) {
         
-//        let location = sender.convert(sender.bounds.origin, to: collectionView)
-//        let indexPath = collectionView.indexPathForItem(at: location)
-//        
-//        let cell = collectionView.cellForItem(at: indexPath!) as! FavoriteItemCollectionViewCell
-//        cell.giphyImageView.alpha = 1.0
-//        cell.stackView.isHidden = true
+        let location = sender.convert(sender.bounds.origin, to: collectionView)
+        let indexPath = collectionView.indexPathForItem(at: location)
+
+        let cell = collectionView.cellForItem(at: indexPath!) as! FavoriteItemCollectionViewCell
+        cell.giphyImageView.alpha = 1.0
+        cell.stackView.isHidden = true
     }
 }
 

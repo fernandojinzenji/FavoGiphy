@@ -40,6 +40,14 @@ class FavouritesViewModel {
         return cellViewModels[indexPath.row]
     }
     
+    func removeFromFavorites(id: String) {
+        
+        giphyManager.deleteGiphy(id: id)
+        
+        fetchData()
+        
+    }
+    
     private func createCellViewModels(giphy: GiphyImage) -> FavouritesCellViewModel {
         
         let animatedImage = giphyManager.generateAnimatedGif(giphy: giphy)
@@ -47,7 +55,6 @@ class FavouritesViewModel {
         return FavouritesCellViewModel(id: giphy.id, image: animatedImage)
         
     }
-    
 }
 
 struct FavouritesCellViewModel {
