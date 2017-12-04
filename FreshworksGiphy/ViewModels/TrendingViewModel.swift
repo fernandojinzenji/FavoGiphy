@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SwiftGifOrigin
 
+
 class TrendingViewModel {
     
     private let apiManager = APIManager()
